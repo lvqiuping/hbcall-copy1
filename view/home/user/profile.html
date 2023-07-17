@@ -1,0 +1,102 @@
+{extend name="../common/public/base" /}
+{block name="css"}
+{include file="../common/public/bootstrap" /}
+{/block}
+{block name="body"}
+<div class="layuimini-container ">
+    <div class="layuimini-main ">
+        <div class="container-fluid ">
+            <div class="row mt-5 justify-content-center">
+                <div class="col-md-8 col-sm-12">
+                    <form class="layui-form layuimini-form">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">昵称</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="username" placeholder="请输入昵称"  value="{$user.username}" class="layui-input border-0 text-muted" readonly>
+                                <tip>此昵称作为登录账号使用，暂不支持更改</tip>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">真实姓名</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="realname" placeholder="请输入真实姓名"  value="{$user.realname}" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">手机号</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="phone" lay-verify="required|phone" placeholder="请输入手机号"  value="{$user.phone}" class="layui-input">
+                                <tip>手机号用于拨号，请认真填写</tip>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">呼叫线路</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="" value="{$user.company.call_type_text}" class="layui-input text-muted border-0" disabled>
+                            </div>
+                        </div>
+                        <div class="layui-form-item {if !in_array($user->company->call_type, [3, 4])}d-none{/if}">
+                            <label class="layui-form-label" for="callback_number">回拨号码</label>
+                            <div class="layui-input-block" id="callback_number">
+                                <input type="text" name="callback_number" placeholder="回拨号码"
+                                       autocomplete="off" class="layui-input" value="{$user.callback_number}">
+                                <tip>提示：呼叫线路为<strong>电信回拨</strong>、<strong>移动回拨</strong>时，必须提供回拨号码才能进行拨号</tip>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">登陆IP</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="ip" value="{$user.loginip}" class="layui-input border-0 text-muted" disabled>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">最后登陆</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="time"  value="{$user.logintime}" class="layui-input border-0 text-muted" disabled>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">上次登陆</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="time"  value="{$user.prevtime}" class="layui-input border-0 text-muted" disabled>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+<script>
+    layui.use(['form', 'miniTab', 'jquery', 'arronUtil'], function () {
+        let form = layui.form,
+            arronUtil = layui.arronUtil,
+            $ = layui.jquery,
+            miniTab = layui.miniTab;
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            $.post(arronUtil.url("/user/profile"), data.field, function (res) {
+                let option = { title: res.msg, position: 'center' }
+                if (res.code) {
+                    option.icon = 'success'
+                }
+
+                arronUtil.Toast.fire(option)
+            })
+
+            return false;
+        });
+
+    });
+</script>
+
+{/block}

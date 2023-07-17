@@ -1,0 +1,9 @@
+body .layer-ext-red .layui-layer-title {
+    background-color: #FF5722 !important;
+    color: #fff;
+}
+
+body .layer-ext-red .layui-layer-close {
+    color: #fff
+}
+

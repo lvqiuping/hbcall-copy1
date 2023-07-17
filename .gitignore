@@ -1,0 +1,7 @@
+/.idea
+/.vscode
+*.log
+.env
+/runtime
+/node_modules
+/public/storage

@@ -1,0 +1,47 @@
+{extend name="../common/public/base" /}
+{block name="css"}
+{include file="../common/public/bootstrap" /}
+{/block}
+{block name="body"}
+<div class="container-fluid bg-white rounded-3 py-2">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <table class="layui-table" id="currentTableId" lay-filter="currentTableFilter" lay-data="">
+                <thead>
+                <tr>
+                    <th lay-data="{field: 'id', title: 'ID', width: 100, align: 'center'}"></th>
+                    <th lay-data="{field: 'content', title: '记录内容'}"></th>
+                    {if ($module !== 'home')}
+                    <th lay-data="{field: 'username', title: '跟进人', width: 180}"></th>
+                    {/if}
+                    <th lay-data="{field: 'next_call_time', title: '下次回访', align: 'center', width: 180}"></th>
+                    <th lay-data="{field: 'create_time', title: '记录时间', align: 'center', width: 180}"></th>
+                    {if ($module === 'home')}
+                    <th lay-data="{fixed: 'right', title: '操作', align: 'center', toolbar: '#tool', width: 150}"></th>
+                    {/if}
+                </tr>
+                </thead>
+            </table>
+            {if ($module === 'home')}
+            <script type="text/html" id="currentTableBar">
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" data-bs-toggle="modal" data-bs-target="#recordModal"><i class="fa fa-plus"></i> 添加</button>
+            </script>
+            <script type="text/html" id="tool">
+                <button type="button" class="layui-btn layui-btn-xs" data-bs-toggle="modal" data-bs-target="#recordModal" data-id="{{ d.id }}" title="编辑"><i class="fa fa-user-edit"></i></button>
+                <button type="button" class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del" title="删除"><i class="fa fa-trash-can"></i></button>
+            </script>
+            {/if}
+        </div>
+
+    </div>
+</div>
+{include file="../common/customer/edit_record" /}
+{/block}
+{block name="js"}
+<script>
+    const customer_id = {$customerId};
+</script>
+<script src="__STATIC__/lib/layui_exts/excel.js"></script>
+<script src="__STATIC__/js/common/customer_record_list.js?v={:time()}"></script>
+
+{/block}

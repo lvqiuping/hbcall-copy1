@@ -1,0 +1,94 @@
+{extend name="../common/public/base" /}
+{block name="css"}
+{include file="../common/public/bootstrap" /}
+<style type="text/css">
+    #phone-numbers span:active {
+        background-color: blue;
+    }
+</style>
+{/block}
+{block name="body"}
+<div class="container-fluid bg-white rounded-3 py-2">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-7 mb-3">
+            <div class="layui-tab layui-tab-card">
+                <ul class="layui-tab-title">
+                    <li class="layui-this ">客户管理</li>
+                </ul>
+                <div class="layui-tab-content p-3 pt-0 overflow-scroll" style="max-height: 750px;">
+                    <div class="layui-tab-item layui-show">
+                        <div class="import-description mb-3">
+                            <button class="btn btn-outline-primary btn-sm" id="lastImport">
+                                <i class="fa fa-clock"></i> 上次导入
+                            </button>
+                            <button class="btn btn-primary btn-sm" id="importExcel">
+                                <i class="fa fa-file-import"></i> 导入客户
+                            </button>
+                            <button class="btn btn-danger btn-sm clear-customer">
+                                <i class="fa fa-trash-can"></i> 清空列表
+                            </button>
+                            <a href="/HbCall/downloadTemplate" class="btn btn-info btn-sm download-template"><i class="fa fa-download"></i> 下载模板</a>
+                            <a href="javascript:;" class="ms-3 check-rules text-decoration-none"><i class="fa fa-info-circle"></i> 导入说明</a>
+                        </div>
+                        <div class="customer-list">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-xl-5">
+            <div class="row justify-content-center mb-5">
+                <div class="col-sm-12 col-md-8 col-lg-7 col-xl-8">
+                    <div class="row pb-3" style="background-color: #f4f4f4;">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col p-0 position-relative">
+                                    <button type="button" class="btn btn-sm position-absolute top-0 end-0 call-info" data-bs-toggle="modal"
+                                            id="infoToggleModal" data-bs-target="#infoModal"
+                                    >
+                                        <i class="fa fa-info-circle fs-5 text-secondary" data-bs-toggle="tooltip" data-bs-title="注意事项"></i>
+                                    </button>
+                                    <input type="text" name="phone" value=""
+                                           placeholder="请输入号码"
+                                           class="w-100 callinginput fs-1 border-0 text-center py-5 bg-transparent"
+                                           id="input"
+                                           onkeyup="this.value= this.value.match(/\d+(\d{0,2})?/) ? this.value.match(/\d+(\d{0,2})?/)[0] : ''">
+                                </div>
+                            </div>
+
+                            <!-- 拨号键 -->
+                            <div class="row row-cols-3 gy-5 py-4 justify-content-center fs-1"
+                                 id="phone-numbers"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="infoModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h1 class="modal-title fs-6">温馨提示</h1>
+            </div>
+            <div class="modal-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item border-0">1、只允许拨打本公司业务电话，不允许拨打其他行业电话。</li>
+                    <li class="list-group-item border-0">2、拨号当中不允许出现：金融、地产相关高频行业。</li>
+                    <li class="list-group-item border-0">3、通话中不允许出现：代开发票、造假等违法字眼。</li>
+                    <li class="list-group-item border-0">4、不允许在通话中辱骂。</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger btn-sm" data-bs-dismiss="modal" data-bs-target="#infoModal">我知道了</button>
+            </div>
+        </div>
+    </div>
+</div>
+{include file="../common/customer/edit_record" /}
+{/block}
+{block name="js"}
+<script src="__STATIC__/js/home/call_center.js?v={:time()}"></script>
+
+{/block}

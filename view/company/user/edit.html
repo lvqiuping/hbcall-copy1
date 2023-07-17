@@ -1,0 +1,101 @@
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas" style="width: 600px;">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title">编辑</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="">
+            <form class="" action="" name="formEditor">
+                <input name="id" value="" type="hidden"/>
+                <div class="mb-3">
+                    <h5 class="text-black-50 text-center">账号信息</h5>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="call_type">呼叫线路</label>
+                    <div>{$user.call_type_text}</div>
+                    <div class="form-text">提示：当前使用呼叫线路</div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="account">账号<span class="text-warning px-1">*</span></label>
+                    <input type="text" name="username" id="account" placeholder="账号"
+                           autocomplete="off" class="form-control" value="" required>
+                    <div class="form-text">提示：此昵称作为登录账号使用，创建后暂不支持更改</div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="password">密码<span class="text-warning px-1">*</span></label>
+                    <input type="password" name="password" id="password"
+                           placeholder="密码"
+                           autocomplete="off" class="form-control" value="" required>
+                </div>
+                <div class="mb-3 {if $user->call_type !== 1}d-none{/if}">
+                    <label class="form-label" for="xnumber">小号</label>
+                    <select name="number_store_id" id="xnumber" class="form-select">
+                        <option value="{$user.companyXnumber.numberStore.id}">{$user.companyXnumber.numberStore.number}</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="realname">真实姓名<span class="text-warning px-1">*</span></label>
+                    <input type="text" name="realname" id="realname" placeholder="真实姓名" autocomplete="off"
+                           class="form-control" value="" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="phone">联系电话<span class="text-warning px-1">*</span></label>
+                    <input type="text" name="phone" id="phone" placeholder="联系电话"
+                           autocomplete="off" class="form-control" value="" required>
+                </div>
+
+                <div class="mb-3 {if !in_array($user->call_type, [3, 4])}d-none{/if}">
+                    <label class="form-label" for="callback_number">回拨号码<span class="text-danger" style="margin: 0 5px;">*</span></label>
+                    <input type="text" name="callback_number" id="callback_number" placeholder="回拨号码"
+                           autocomplete="off" class="form-control" value="" {if in_array($user->call_type, [3, 4])}required{/if}>
+                    <div class="form-text">提示：呼叫线路为<strong>电信回拨</strong>、<strong>移动回拨</strong>时，必须提供回拨号码才能进行拨号</div>
+                </div>
+                {if $user->recycle_on}
+                <div class="mb-3">
+                    <label class="form-label" for="customer_num">客户数量</label>
+                    <input type="number" name="customer_num" id="customer_num" min="0" placeholder="0"
+                           autocomplete="off" class="form-control" value="">
+                    <div class="form-text">提示：0为不限制。意向、无效类型的数量</div>
+                </div>
+                {if $user->talent_on}
+                <div class="mb-3">
+                    <label class="form-label" for="talent_num">人才数量</label>
+                    <input type="number" name="talent_num" id="talent_num" min="0" placeholder="0"
+                           autocomplete="off" class="form-control" value="">
+                    <div class="form-text">提示：0为不限制。意向、无效类型的数量</div>
+                </div>
+                {/if}
+                {/if}
+                <div class="mb-3">
+                    <label class="form-label" for="customer_view_num">查看电话次数</label>
+                    <input type="number" name="customer_view_num" id="customer_view_num" min="0" placeholder="0"
+                           autocomplete="off" class="form-control" value="">
+                    <div class="form-text">提示：0 为无限制查看客户电话次数</div>
+                </div>
+                <div class="mb-3 form-check form-switch {if $user.id !== 1} d-none {/if}">
+                    <input type="checkbox" class="form-check-input" id="isTest" name="is_test"
+                           value="1">
+                    <label class="form-check-label" for="isTest">测试账号</label>
+                    <div class="form-text">提示：设为测试账号</div>
+                </div>
+                <div class="mb-3 d-none test-endtime">
+                    <label class="form-label" for="test_endtime">结束时间</label>
+                    <input type="text" name="test_endtime" placeholder="1970-01-01 00:00:00"
+                           autocomplete="off" class="form-control" value="" id="testEndTime">
+                    <div class="form-text">提示：超过测试时间将禁止拨号，空为无限制。</div>
+                </div>
+                <div class="mb-5 d-none limit-call-number">
+                    <label class="form-check-label" for="limit_call_number">限制拨打数量</label>
+                    <input type="number" id="limit_call_number" class="form-control" name="limit_call_number"
+                           value="" autocomplete="off">
+                    <div class="form-text">提示：0为无限制</div>
+                </div>
+
+                <div class="mb-3 d-grid">
+                    <button class="btn btn-primary" type="submit">保 存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

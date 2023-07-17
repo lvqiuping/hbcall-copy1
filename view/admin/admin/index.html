@@ -1,0 +1,77 @@
+{extend name="../common/public/base" /}
+{block name="css"}
+    {include file="../common/public/bootstrap" /}
+{/block}
+{block name="body"}
+<div class="container-fluid bg-white rounded-3 pt-3">
+    <div class="row">
+        <div class="col">
+            <form class="layui-form layui-form-pane" lay-filter="searchForm" name="searchForm">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">用户名</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="username" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <button type="submit" class="layui-btn layui-btn-normal" lay-submit
+                                lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <button class="layui-btn layui-btn-sm d-none" id="importExcel"><i class="fa fa-file-import"></i> 批量导入</button>
+            <script type="text/html" id="toolbarAdmin">
+                <div class="layui-btn-container">
+                    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" data-bs-toggle="offcanvas" data-bs-target="#offcanvas"><i class="fa fa-plus"></i> 添加</button>
+                </div>
+            </script>
+
+            <table class="layui-table" id="adminTableId" lay-filter="adminTableFilter" lay-even lay-data="">
+                <thead>
+                <tr>
+                    <th lay-data="{field: 'id', title: 'ID', width: 100}"></th>
+                    <th lay-data="{field: 'username', title: '用户名'}"></th>
+                    <th lay-data="{field: 'status_text', title: '状态', align: 'center', templet: '#status', width: 100}"></th>
+                    <th lay-data="{field: 'create_time', title: '创建时间', align: 'center'}"></th>
+                    <th lay-data="{title: '操作', width: 100, toolbar: '#adminTableBar', align: 'left'}"></th>
+                </tr>
+                </thead>
+            </table>
+
+            {if ($user->id === 1)}
+            <script type="text/html" id="adminTableBar">
+                <a class="layui-btn layui-btn-xs data-count-edit" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" data-id="{{ d.id }}" title="编辑"><i class="fa fa-user-edit"></i> </a>
+                {{# if (d.id !== 1) { }}
+                <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="del" title="删除"><i class="fa fa-trash-can"></i> </a>
+                {{# } }}
+            </script>
+            {/if}
+
+            <script type="text/html" id="status">
+                {{# if (d.id !== 1) { }}
+                {{# if(d.status === 1) { }}
+                <input type="checkbox" name="status" value="{{d.id}}" lay-skin="switch" lay-text="正常|禁止" lay-filter="statusFilter" checked>
+                {{# } else { }}
+                <input type="checkbox" name="status" value="{{d.id}}" lay-skin="switch" lay-text="正常|禁止" lay-filter="statusFilter">
+                {{# } }}
+                {{# } }}
+            </script>
+
+        </div>
+    </div>
+</div>
+{include file="admin/edit" /}
+{/block}
+
+{block name="js"}
+<script src="__STATIC__/js/admin/admin.js?v={:time()}">
+</script>
+
+{/block}

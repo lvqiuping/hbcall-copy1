@@ -1,0 +1,100 @@
+{extend name="../common/public/base" /}
+{block name="css"}
+    {include file="../common/public/bootstrap" /}
+{/block}
+{block name="body"}
+<div class="container-fluid bg-white rounded-3 py-3">
+    <div class="row">
+        <div class="col">
+            <form class="layui-form layui-form-pane" lay-filter="searchForm" name="searchForm">
+                <div class="layui-form-item">
+                    {if $user.id === 1}
+                    <div class="layui-inline">
+                        <label class="layui-form-label">是否试用</label>
+                        <div class="layui-input-inline">
+                            <select name="is_test" lay-filter="tryUserFilter">
+                                {foreach $isTestList as $key => $val}
+                                <option value="{$key}">{$val}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    </div>
+                    {/if}
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">关键词</label>
+                        <div class="layui-input-inline">
+                            <select name="operate" lay-filter="filterOperate">
+                                <option value="username">账号</option>
+                                <option value="realname">真实姓名</option>
+                                <option value="phone">手机号</option>
+                            </select>
+                        </div>
+                        <div class="layui-input-inline">
+                            <input type="text" name="keyword" class="layui-input" value="" placeholder="关键词">
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <button type="submit" class="layui-btn layui-btn-normal"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                    </div>
+                    <div class="layui-inline">
+                        <button type="reset" class="layui-btn layui-btn-primary"><i class="fa fa-refresh"></i> 重 置</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <script type="text/html" id="toolbarDemo">
+                <div class="layui-btn-container">
+                    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" data-bs-toggle="offcanvas" data-bs-target="#offcanvas"><i class="fa fa-plus"></i> 添加</button>
+                </div>
+            </script>
+
+            <table class="layui-table" id="currentTableId" lay-filter="currentTableFilter" lay-even lay-data="">
+                <thead>
+                <tr>
+                    <th lay-data="{field: 'id', title: 'ID'}"></th>
+                    <th lay-data="{field: 'username', title: '账号'}"></th>
+                    <th lay-data="{field: 'realname', title: '真实姓名'}"></th>
+                    <th lay-data="{field: 'phone', title: '手机号', align: 'center'}"></th>
+                    <th lay-data="{field: 'number', title: '小号', align: 'center',}"></th>
+                    <th lay-data="{field: 'customer_count', title: '客户数量', align: 'center', sort: true}"></th>
+                    <th lay-data="{field: 'call_sum', title: '呼叫总数', align: 'center', sort: true }"></th>
+                    <th lay-data="{field: 'expense', title: '总消费', align: 'center', sort: true }"></th>
+                    {if ($user.id === 1)}
+                    <th lay-data="{field: 'is_test_text', title: '试用', align: 'center',}"></th>
+                    <th lay-data="{field: 'test_endtime', title: '到期日期', align: 'center', width: 180}"></th>
+                    {/if}
+                    <th lay-data="{field: 'logintime', title: '登录时间', align: 'center'}"></th>
+                    <th lay-data="{field: 'statusText', title: '状态', align: 'center', templet: '#status'}"></th>
+                    <th lay-data="{title: '操作', minWidth: 100, toolbar: '#currentTableBar', align: 'center'}"></th>
+                </tr>
+                </thead>
+            </table>
+
+            <script type="text/html" id="status">
+                {{# if(d.status === 1) { }}
+                <input type="checkbox" name="status" value="{{d.id}}" lay-skin="switch" lay-text="正常|禁止" lay-filter="statusFilter" checked>
+                {{# } else { }}
+                <input type="checkbox" name="status" value="{{d.id}}" lay-skin="switch" lay-text="正常|禁止" lay-filter="statusFilter">
+                {{# } }}
+            </script>
+
+            <script type="text/html" id="currentTableBar">
+                <a class="layui-btn layui-btn-xs data-count-edit" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" data-id="{{ d.id }}" title="编辑"><i class="fa fa-user-edit"></i></a>
+                <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete" title="删除"><i class="fa fa-trash-can"></i> </a>
+            </script>
+
+        </div>
+    </div>
+</div>
+{include file="user/edit" /}
+{/block}
+
+{block name="js"}
+<script src="__STATIC__/js/company/user.js?v={:time()}"></script>
+
+{/block}

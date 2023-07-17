@@ -1,0 +1,204 @@
+{extend name="public/base" /}
+
+{block name="css"}
+
+{/block}
+
+{block name="content"}
+
+<div class="container-fluid p-0 mb-5">
+    <div class="card bg-dark text-white text-center" style="border-radius: 0px;">
+        <img src="__STATIC__/images/news/slide.png" class="card-img" alt="..." style="height: auto; min-height: 180px;">
+        <div class="card-img-overlay" style="min-height: 300px;">
+            <h2 class="text-primary">新闻资讯</h2>
+            <h5 class="text-white fs-4">
+                从业十余年，服务10000+坐席
+            </h5>
+        </div>
+    </div>
+</div>
+<!--后台没有返回数据的时候显示的模板-->
+
+<!--后台有返回数据的时候显示的模板-->
+
+<div class="container-fluid p-0 mb-5 ">
+    <div class="container">
+        <!-- 无数据时 -->
+        <div class="row no-data d-none">
+            <div class="col text-center">
+                <img class="img-fluid" src="__STATIC__/images/news/noNews.png">
+            </div>
+        </div>
+
+        <!-- 有数据时 -->
+        <div class="row news-list">
+            <div class="col-12">
+                <div class="row pb-5 d-none">
+                    <div class="col-4">
+                        <img class="img-fluid shadow" src="" style="max-width: 500px; height: 200px;">
+                    </div>
+                    <div class="col-8">
+                        <p class="d-inline-block text-truncate mb-4 text-primary fs-3" style="max-width: 100%;">
+                        </p>
+                        <div class="mb-5">
+                            <p class="text-muted fs-6 mb-2">发布时间：</p>
+                            <p style="max-width: 100%; text-overflow: -o-ellipsis-lastline; overflow: hidden; text-overflow: ellipsis;
+                                      display: -webkit-box;-webkit-line-clamp: 3;line-clamp: 3;-webkit-box-orient: vertical;"></p>
+                        </div>
+                        <a class="btn btn-danger lqpDetail" href="/news/" target="_blank">查看详情</a>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <ul class="lqp-news">
+                        </ul>
+                    </div>
+                </div>
+                <div class="row justify-content-end">
+                    <div class="col-6">
+                        <nav id="pageList" class="float-end">
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{/block}
+{block name="js"}
+<script lang="js">
+    let news = $('.lqp-news').find('li');
+    $(news).hover(
+        function () {
+            $(this).css({"background": "#eee"});
+        },
+        function () {
+            $(this).css({"background": ""});
+        }
+    )
+
+    // 显示页码数量
+    let limitPages = 5;
+    let getNewsList = function (p = 1, limit = 5) {
+        $.get('/news/getList', {page: p, limit: limit}, function (res) {
+            if (res.list.length > 0) {
+                $('.no-data').addClass('d-none');
+
+                let newsList = '';
+                $.each(res.list, function (index, item) {
+                    if (item.cover_img === '') {
+                        item.cover_img = '__STATIC__/images/news/noImg.png';
+                    }
+                    let intro = item.intro ? item.intro : item.content;
+
+                    newsList += `
+                        <li class="border-bottom  position-relative">
+                            <div class="row p-2">
+                                <div class="col-2">
+                                    <img class="img-fluid" src="${item.cover_img}" style="max-height: 140px;width: 140px;">
+                                </div>
+
+                                <div class="col-10">
+                                    <div class="fs-5 text-truncate text-primary mb-3" style="max-width: 100%;">
+                                        <a href="/news/${item.id}.html" target="_blank" class="stretched-link">${item.title}</a>
+                                    </div>
+                                    <div class="mb-2"><span class="lqp-text-indent fs-6 text-nowrap text-muted">发布时间：${item.update_time}</span>
+                                    </div>
+                                    <div class="fs-6 mb-2 lqp-2line" style="max-width: 100%;">
+                                        ${intro}
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    `;
+                });
+                $('.lqp-news').html(newsList);
+
+                let Count = res.count;
+                let Pages = Math.ceil(Count / limit);
+                let pageList = '';
+                // TODO 只显示几个页码，待优化
+                let start = 1;
+                let _s = p + limitPages;
+                if (Pages < _s) {
+                    start = Pages - limitPages + 1;
+                    if (start < 0) {
+                        start = 1;
+                    }
+                } else {
+                    start = Math.abs(p - 2);
+                    if (start === 0) {
+                        start = 1;
+                    } else if (start < p) {
+                        start = p;
+                    }
+                }
+                let end = start + limitPages;
+                // 截取页码数量
+                let pNum = Array.from(new Array(Pages + 1).keys()).slice(start, end);
+                $.each(pNum, function (index, item) {
+                    if (item === p) {
+                        pageList += `<li class="page-item active"><span class="page-link">${item}</span></li>`;
+                    } else {
+                        pageList += `<li class="page-item"><a class="page-link" data-number="${item}" href="javascript:;">${item}</a></li>`;
+                    }
+                })
+
+                let prevLi = '';
+                if (p === 1) {
+                    prevLi = `
+                        <li class="page-item disabled" id="firstPage">
+                            <span class="page-link">上一页</span>
+                        </li>
+                    `;
+                } else {
+                    prevLi = `
+                        <li class="page-item">
+                            <a class="page-link" data-number="${p - 1}" href="javascript:;">上一页</a>
+                        </li>
+                    `;
+                }
+
+                let nextLi = '';
+                if (p === Pages) {
+                    nextLi = `
+                        <li class="page-item disabled" id="endPage">
+                            <span class="page-link">下一页</span>
+                        </li>
+                    `;
+                } else {
+                    nextLi = `
+                        <li class="page-item">
+                            <a class="page-link" data-number="${p + 1}" href="javascript:;">下一页</a>
+                        </li>
+                    `;
+                }
+
+                let pageTemplet = `
+                    <ul class="pagination">
+                        ${prevLi}
+                        ${pageList}
+                        ${nextLi}
+                    </ul>
+                `;
+
+                $('#pageList').html(pageTemplet);
+
+                // 点击页码
+                $('a.page-link').on('click',function (e) {
+                    let curPage = $(this).data('number');
+                    getNewsList(curPage);
+                });
+            } else {
+                $('.no-data').removeClass('d-none');
+            }
+        });
+    }
+
+    getNewsList();
+
+</script>
+{/block}
+

@@ -1,0 +1,164 @@
+{extend name="../common/public/base" /}
+{block name="css"}
+    {include file="../common/public/bootstrap" /}
+{/block}
+{block name="body"}
+<div class="container-fluid bg-white rounded-3 py-3">
+    <div class="row">
+        <div class="col">
+            <form class="layui-form layui-form-pane" lay-filter="searchForm" name="searchForm">
+                <div class="layui-form-item">
+                    <div class="layui-inline" id="datetime">
+                        <label class="layui-form-label">时间筛选</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="startDate" autocomplete="off" id="startDate" class="layui-input" placeholder="开始日期">
+                        </div>
+                        <div class="layui-form-mid">-</div>
+                        <div class="layui-input-inline">
+                            <input type="text" name="endDate" autocomplete="off" id="endDate" class="layui-input" placeholder="结束日期">
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">通话时长</label>
+                        <div class="layui-input-inline">
+                            <select name="operate" lay-filter="filterOperate">
+                                <option value="">请选择操作符</option>
+                                <option value="eq">等于</option>
+                                <option value="gt">大于</option>
+                                <option value="lt">小于</option>
+                            </select>
+                        </div>
+                        <div class="layui-input-inline">
+                            <input type="number" name="duration" class="layui-input" value="" placeholder="秒" min="0">
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">号码筛选</label>
+                        <div class="layui-input-inline">
+                            <select name="caller" lay-filter="filterCaller">
+                                {if $module !== 'home'}
+                                <option value="caller_number">主叫号码</option>
+                                {/if}
+                                <option value="called_number">被叫号码</option>
+                            </select>
+                        </div>
+                        <div class="layui-input-inline">
+                            <input type="text" name="phone" class="layui-input" value="" placeholder="电话号码">
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <button type="submit" class="layui-btn layui-btn-normal" lay-submit
+                                lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索
+                        </button>
+                        <button type="reset" class="layui-btn layui-btn-primary"><i class="fa fa-refresh"></i> 重 置</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        {if $module !== 'home'}
+        <div class="col-lg-2 col-md-3 col-sm-12">
+            <div class="layui-card border border-light-subtle mt-2">
+                <div class="layui-card-header">筛选</div>
+                <div class="layui-card-body overflow-y-auto overflow-x-hidden" style="max-height: 680px;">
+                    <ul class="layui-menu p-0" id="filterUser">
+                        {if $module === 'admin'}
+                        <li class="layui-menu-item-checked" lay-options="{user_id: 0, company_id: 0}">
+                            <div class="layui-menu-body-title">全部</div>
+                        </li>
+                        {foreach $company as $key => $val}
+                        <li class="layui-menu-item-group layui-menu-item-up" lay-options="{type: 'group'}">
+                            <div class="layui-menu-body-title">
+                                {$val.corporation} <i class="layui-icon layui-icon-up"></i>
+                            </div>
+                            {if !empty($val.user)}
+                            <ul class="p-0">
+                                <li class="" lay-options="{user_id: 0, company_id: {$val.id}}">
+                                    <div class="layui-menu-body-title">全部</div>
+                                </li>
+                                {foreach $val.user as $k => $v}
+                                <li lay-options="{user_id: {$v.id}, company_id: {$val.id}}">
+                                    <div class="layui-menu-body-title">{$v.realname}</div>
+                                </li>
+                                {/foreach}
+                            </ul>
+                            {/if}
+                        </li>
+                        {/foreach}
+                        {elseif $module === 'company'}
+                        <li class="layui-menu-item-checked" lay-options="{user_id: 0, company_id: {$user.id}}">
+                            <div class="layui-menu-body-title">全部</div>
+                        </li>
+                        {foreach $users as $key => $val}
+                        <li class="" lay-options="{user_id: {$val.id}, company_id: {$val.company_id}}">
+                            <div class="layui-menu-body-title">{$val.realname}</div>
+                        </li>
+                        {/foreach}
+                        {/if}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-10 col-md-9 col-sm-12">
+        {else /}
+        <div class="col">
+        {/if}
+            <table class="layui-table" id="currentTableId" lay-filter="currentTableFilter" lay-data="">
+                <thead>
+                <tr>
+                    <th lay-data="{field: 'id', title: 'ID', align: 'center', width: 100, fixed: 'left'}"></th>
+                    <th lay-data="{field: 'subid', title: '编号', align: 'center', width: 240}"></th>
+                    {if ($module !== 'home')}
+                    <th lay-data="{field: 'username', title: '操作人', align: 'center', width: 200}"></th>
+                    {if ($module === 'admin')}
+                    <th lay-data="{field: 'company', title: '所属公司', align: 'center', width: 200}"></th>
+                    {/if}
+                    <th lay-data="{field: 'caller_number', title: '主叫号码', align: 'center', width: 150}"></th>
+                    {/if}
+                    <th lay-data="{field: 'customer', title: '客户名称', align: 'center', width: 200,}"></th>
+                    <th lay-data="{field: 'called_number', title: '被叫号码', align: 'center', width: 150}"></th>
+                    <th lay-data="{field: 'call_type_text', title: '呼叫线路', align: 'center', width: 200,}"></th>
+                    <th lay-data="{field: 'create_time', title: '呼叫时间', align: 'center', sort: true, width: 180}"></th>
+                    <th lay-data="{field: 'call_duration', title: '通话时长（分）', sort: true, align: 'center', width: 150}"></th>
+                    <th lay-data="{field: 'cost', title: '消费金额（￥/元）', align: 'center', width: 150}"></th>
+                    {if ($module === 'home')}
+                    <th lay-data="{title: '录音', align: 'center', templet: '#record'}"></th>
+                    {else /}
+                    <th lay-data="{title: '录音', width: 250, align: 'center', templet: '#record'}"></th>
+                    {/if}
+                    {if $module === 'admin'}
+                    <th lay-data="{field: 'status', title: '状态', width: 80, align: 'center'}"></th>
+                    {/if}
+                </tr>
+                </thead>
+            </table>
+
+            <script type="text/html" id="record">
+                {{# if (d.record_url) { }}
+                <audio style='width: 100%; height: 100%;' src='{{d.record_url}}' controls>您的浏览器不支持 audio 标签。</audio>
+                {{# } }}
+            </script>
+            <script type="text/html" id="currentTableBar">
+                <a class="layui-btn layui-btn-xs layui-btn-info" lay-event="preview">查看</a>
+            </script>
+
+            {if ($module === 'admin')}
+            <script type="text/html" id="syncCallHistory">
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" lay-event="syncCallHistory"><i class="fa fa-refresh"></i> 同步数据</button>
+            </script>
+            {/if}
+        </div>
+    </div>
+</div>
+
+{/block}
+
+{block name="js"}
+<script src="__STATIC__/js/common/history_list.js?v={:time()}"></script>
+{/block}
